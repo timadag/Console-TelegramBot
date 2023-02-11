@@ -19,25 +19,35 @@ namespace TelegramBotExperiments
             Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(update));
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
             {
-                
+
                 var message = update.Message;
-                if (message == null)
+                if (message.Text != null)
                 {
                     if (message.Text.ToLower() == "/game")
                     {
-                        await botClient.SendDiceAsync(message.Chat.Id);
+                        
+                        var st = await botClient.SendDiceAsync(message.Chat.Id);
+                        int sd = st.Dice.Value;
+                        if (sd == 1)
+                        {
+                        await botClient.SendTextMessageAsync(message.Chat, "О поздравляю, ты выйграл!!!");
+
+                        }
+                        //await botClient.SendTextMessageAsync(message.Chat, $"d");
+                        
+
                     }
 
                     if (message.Text.ToLower() == "/start")
                     {
 
-                        await botClient.SendTextMessageAsync(message.Chat.Id, $"Добро пожаловать на борт, добрый  {message.Chat.FirstName}!,В чате администраторов", replyToMessageId: message.MessageId);
+                        await botClient.SendTextMessageAsync(message.Chat.Id, $"Добро пожаловать на борт, добрый  {message.Chat.FirstName}!", replyToMessageId: message.MessageId);
                         return;
                     }
                 }
-                await botClient.SendTextMessageAsync(message.Chat, "Привет-привет!!");
             }
-        }
+            }
+        
 
         public static async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
